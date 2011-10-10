@@ -1,29 +1,35 @@
 Ext.ns('Bajjutsu')
 
-Bajjutsu.Health = Ext.extend(Ext.Panel,
+Bajjutsu.Health = Ext.extend(Ext.Carousel,
   constructor: (cfg = {}) ->
     cfg = Ext.applyIf(cfg,
+      activeItem: 0
       cls: 'health'
+      direction: 'vertical'
       flex: 1
+      items: [
+        {
+          cls: 'health_6'
+        }
+        {
+          cls: 'health_5'
+        }
+        {
+          cls: 'health_4'
+        }
+        {
+          cls: 'health_3'
+        }
+        {
+          cls: 'health_2'
+        }
+        {
+          cls: 'health_1'
+        }
+      ]
+      indicator: false
     )
     Bajjutsu.Health.superclass.constructor.call(@, cfg)
-    @on('render', ->
-      @resetHealth(false)
-      @mon(@el,
-        drag: (event) ->
-          { absDeltaX, absDeltaY, deltaY } = event
-          if deltaY < -10 and absDeltaY / absDeltaX > 4
-            @setHealth(@health + 1)
-          else if deltaY > 10 and absDeltaY / absDeltaX > 4
-            @setHealth(@health - 1)
-        scope: @
-        singletap: (event, target) ->
-          @setHealth()
-        touchend: (event) ->
-          @flag = false
-      )
-    , @)
-
   setHealth: (n = @health - 1, setFlag = true) ->
     unless @flag
       @flag = true if setFlag

@@ -1,0 +1,61 @@
+@import "compass/css3";
+div, p {
+  color: #black;
+  @include text-shadow(#555, 3px, 3px, 5px);
+}
+
+.technique {
+  .x-carousel-item {
+    text-align: center;
+    h1 {
+      font-size: 2em;
+    }
+    p {
+      font-size: 1.4em;
+      line-height: 48px;
+      img {
+        margin: 0 1em 0 0;
+        vertical-align: middle;
+      }
+    }
+  }
+}
+.health {
+  .health_6 {
+    background: url(../images/health_6.png) center no-repeat;
+  }
+  .health_5 {
+    background: url(../images/health_5.png) center no-repeat;
+  }
+  .health_4 {
+    background: url(../images/health_4.png) center no-repeat;
+  }
+  .health_3 {
+    background: url(../images/health_3.png) center no-repeat;
+  }
+  .health_2 {
+    background: url(../images/health_2.png) center no-repeat;
+  }
+  .health_1 {
+    background: url(../images/health_1.png) center no-repeat;
+  }
+}
+.charge {
+  .charge_3 {
+    background: url(../images/charge_3.png) center no-repeat;
+  }
+  .charge_2 {
+    background: url(../images/charge_2.png) center no-repeat;
+  }
+  .charge_1 {
+    background: url(../images/charge_1.png) center no-repeat;
+  }
+  .charge_0 {
+    background: url(../images/charge_0.png) center no-repeat;
+  }
+}
+
+.x-fullscreen {
+  background: white;
+  background-size: 100%;
+}

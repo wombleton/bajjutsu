@@ -1,39 +1,36 @@
 Ext.ns('Bajjutsu')
 
-Bajjutsu.Charge = Ext.extend(Ext.Panel,
+Bajjutsu.Charge = Ext.extend(Ext.Carousel,
   constructor: (cfg = {}) ->
     cfg = Ext.applyIf(cfg,
+      activeItem: 3
       cls: 'charge'
+      direction: 'vertical'
+      items: [
+        {
+          cls: 'charge_3'
+        }
+        {
+          cls: 'charge_2'
+        }
+        {
+          cls: 'charge_1'
+        }
+        {
+          cls: 'charge_0'
+        }
+      ]
       flex: 1
+      indicator: false
     )
     Bajjutsu.Charge.superclass.constructor.call(@, cfg)
-    @on('render', ->
-      @resetCharge(false)
-      @mon(@el,
-        drag: (event) ->
-          { absDeltaX, absDeltaY, deltaY } = event
-          if deltaY < -10 and absDeltaY / absDeltaX > 4
-            @setCharge(@charge + 1)
-          else if deltaY > 10 and absDeltaY / absDeltaX > 4
-            @setCharge(@charge - 1)
-        scope: @
-        singletap: ->
-          @setCharge(@charge + 1)
-        doubletap: ->
-          @resetCharge()
-        touchend: ->
-          @flag = false
-      )
-    )
-  setCharge: (charge, setFlag = true) ->
+  setCharge: (charge) ->
     unless @flag
-      @flag = true if setFlag
+      @flag = true
       charge = 0 if charge < 0
       charge = 3 if charge > 3
       @charge = charge
-      @update("""
-        <div class="badge">#{charge}</div>
-    """)
-  resetCharge: (setFlag = true) ->
-    @setCharge(0, setFlag)
+      @setActiveItem(3 - charge)
+  resetCharge: ->
+    @setCharge(0)
 )
