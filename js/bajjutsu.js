@@ -10,15 +10,15 @@
         flex: 1,
         items: [
           {
-            html: "<h1>Healing Wind Technique</h1>\n<p class=\"armsup\"><img src=\"images/attack.svg\"/>Heals Allies</p>"
+            html: "<h1>Healing Wind Technique</h1>\n<p class=\"armsup\"><img src=\"images/attack.png\"/>Heals Allies</p>"
           }, {
-            html: "<h1>Stubborn Tortoise Technique</h1>\n<p class=\"armsup armsdown\"><img src=\"images/attack.svg\"/><img src=\"images/block.svg\"/>Charge Shields</p>"
+            html: "<h1>Stubborn Tortoise Technique</h1>\n<p class=\"armsup armsdown\"><img src=\"images/attack.png\"/><img src=\"images/block.png\"/>Protected By Charge</p>"
           }, {
-            html: "<h1>Fire Form Technique</h1>\n<p class=\"armscrossed\"><img src=\"images/block.svg\"/>Damages Attackers</p>"
+            html: "<h1>Fire Form Technique</h1>\n<p class=\"armscrossed\"><img src=\"images/block.png\"/>Damages Attackers</p>"
           }, {
-            html: "<h1>Void Spirit Technique</h1>\n<p class=\"armsup\"><img src=\"images/attack.svg\"/>Drains Charge</p>"
+            html: "<h1>Void Spirit Technique</h1>\n<p class=\"armsup\"><img src=\"images/attack.png\"/>Drains Charge</p>"
           }, {
-            html: "<h1>Winding Viper Technique</h1>\n<p class=\"armsup\"><img src=\"images/attack.svg\"/>Hurt Blockers</p>"
+            html: "<h1>Winding Viper Technique</h1>\n<p class=\"armsup\"><img src=\"images/attack.png\"/>Hurt Blockers</p>"
           }
         ]
       });
@@ -32,24 +32,40 @@
         cfg = {};
       }
       cfg = Ext.applyIf(cfg, {
-        activeItem: 3,
-        cls: 'charge',
+        activeItem: 0,
+        charge: 0,
+        cls: 'charge-panel',
         direction: 'vertical',
         items: [
           {
-            cls: 'charge_3'
+            cls: 'charge charge_0'
           }, {
-            cls: 'charge_2'
+            cls: 'charge charge_1'
           }, {
-            cls: 'charge_1'
+            cls: 'charge charge_2'
           }, {
-            cls: 'charge_0'
+            cls: 'charge charge_3'
           }
         ],
         flex: 1,
         indicator: false
       });
-      return Bajjutsu.Charge.superclass.constructor.call(this, cfg);
+      Bajjutsu.Charge.superclass.constructor.call(this, cfg);
+      return this.on('render', function() {
+        return this.mon(this.el, {
+          scope: this,
+          singletap: function(event) {
+            if (event.touches.length === 1) {
+              return this.resetCharge();
+            } else {
+              return this.up('screen').reset();
+            }
+          },
+          touchend: function() {
+            return this.flag = false;
+          }
+        }, this);
+      });
     },
     setCharge: function(charge) {
       if (!this.flag) {
@@ -61,7 +77,10 @@
           charge = 3;
         }
         this.charge = charge;
-        return this.setActiveItem(3 - charge);
+        return this.setActiveItem(charge, {
+          direction: 'down',
+          type: 'slide'
+        });
       }
     },
     resetCharge: function() {
@@ -75,89 +94,102 @@
         cfg = {};
       }
       cfg = Ext.applyIf(cfg, {
-        activeItem: 0,
-        cls: 'health',
+        activeItem: 6,
+        cls: 'health-panel',
         direction: 'vertical',
         flex: 1,
+        health: 6,
         items: [
           {
-            cls: 'health_6'
+            cls: 'health health_0'
           }, {
-            cls: 'health_5'
+            cls: 'health health_1'
           }, {
-            cls: 'health_4'
+            cls: 'health health_2'
           }, {
-            cls: 'health_3'
+            cls: 'health health_3'
           }, {
-            cls: 'health_2'
+            cls: 'health health_4'
           }, {
-            cls: 'health_1'
+            cls: 'health health_5'
+          }, {
+            cls: 'health health_6'
           }
         ],
-        indicator: false
+        indicator: false,
+        listeners: {
+          cardswitch: function(container, newCard, oldCard, index) {
+            return this.health = index;
+          },
+          scope: this
+        }
       });
-      return Bajjutsu.Health.superclass.constructor.call(this, cfg);
+      Bajjutsu.Health.superclass.constructor.call(this, cfg);
+      return this.on('render', function() {
+        return this.mon(this.el, {
+          scope: this,
+          singletap: function(event) {
+            if (event.touches.length === 1) {
+              return this.setHealth();
+            } else {
+              return this.up('screen').reset();
+            }
+          },
+          touchend: function() {
+            return this.flag = false;
+          }
+        });
+      });
     },
-    setHealth: function(n, setFlag) {
-      if (n == null) {
-        n = this.health - 1;
-      }
-      if (setFlag == null) {
-        setFlag = true;
+    setHealth: function(health) {
+      if (health == null) {
+        health = this.health - 1;
       }
       if (!this.flag) {
-        if (setFlag) {
-          this.flag = true;
+        this.flag = true;
+        if (health < 0) {
+          health = 0;
         }
-        if (n < 0) {
-          n = 0;
+        if (health > 6) {
+          health = 6;
         }
-        if (n > 6) {
-          n = 6;
-        }
-        this.health = n;
-        return this.update("<div class=\"badge\">" + n + "</div>");
+        this.health = health;
+        return this.setActiveItem(health, {
+          direction: 'down',
+          type: 'slide'
+        });
       }
     },
-    resetHealth: function(setFlag) {
-      if (setFlag == null) {
-        setFlag = true;
-      }
-      return this.setHealth(6, setFlag);
+    resetHealth: function() {
+      return this.setHealth(6);
     }
   });
   Ext.ns('Bajjutsu');
   Bajjutsu.Screen = Ext.extend(Ext.Panel, {
     constructor: function(cfg) {
-      var charge, health;
       if (cfg == null) {
         cfg = {};
       }
-      charge = new Bajjutsu.Charge();
-      health = new Bajjutsu.Health();
+      this.charge = new Bajjutsu.Charge();
+      this.health = new Bajjutsu.Health();
       cfg = Ext.applyIf(cfg, {
         dockedItems: [
           new Ext.Toolbar({
             dock: 'top',
+            height: 48,
             items: [
               {
+                cls: 'logo',
+                height: 48,
                 xtype: 'spacer'
-              }, {
-                handler: function() {
-                  charge.resetCharge(false);
-                  return health.resetHealth(false);
-                },
-                text: 'Meditate',
-                xtype: 'button'
               }
-            ],
-            title: 'Bajjutsu Master'
+            ]
           })
         ],
         items: [
           {
             flex: 1,
-            items: [charge, health],
+            items: [this.charge, this.health],
             layout: {
               align: 'stretch',
               type: 'hbox'
@@ -170,8 +202,13 @@
         }
       });
       return Bajjutsu.Screen.superclass.constructor.call(this, cfg);
+    },
+    reset: function() {
+      this.charge.resetCharge();
+      return this.health.resetHealth();
     }
   });
+  Ext.reg('screen', Bajjutsu.Screen);
   Ext.setup({
     tabletStartupScreen: 'bajjutsu.svg',
     phoneStartupScreen: 'bajjutsu.svg',

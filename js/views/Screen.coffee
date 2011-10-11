@@ -2,34 +2,28 @@ Ext.ns('Bajjutsu')
 
 Bajjutsu.Screen = Ext.extend(Ext.Panel,
   constructor: (cfg = {}) ->
-
-    charge = new Bajjutsu.Charge()
-    health = new Bajjutsu.Health()
+    @charge = new Bajjutsu.Charge()
+    @health = new Bajjutsu.Health()
     cfg = Ext.applyIf(cfg,
       dockedItems: [
         new Ext.Toolbar(
           dock: 'top'
+          height: 48
           items: [
             {
+              cls: 'logo'
+              height: 48
               xtype: 'spacer'
             }
-            {
-              handler: ->
-                charge.resetCharge(false)
-                health.resetHealth(false)
-              text: 'Meditate'
-              xtype: 'button'
-            }
           ]
-          title: 'Bajjutsu Master'
         )
       ]
       items: [
         {
           flex: 1
           items: [
-            charge
-            health
+            @charge
+            @health
           ]
           layout:
             align: 'stretch'
@@ -42,4 +36,8 @@ Bajjutsu.Screen = Ext.extend(Ext.Panel,
         type: 'vbox'
     )
     Bajjutsu.Screen.superclass.constructor.call(@, cfg)
+  reset: ->
+    @charge.resetCharge()
+    @health.resetHealth()
 )
+Ext.reg('screen', Bajjutsu.Screen)

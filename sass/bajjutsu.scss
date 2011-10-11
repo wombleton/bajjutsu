@@ -1,7 +1,11 @@
 @import "compass/css3";
 div, p {
   color: #black;
-  @include text-shadow(#555, 3px, 3px, 5px);
+  font-family: BadaBoom BB, verdana, helvetica, arial, sans-serif;
+}
+
+.logo {
+  background: url(../images/logo.png) no-repeat center;
 }
 
 .technique {
@@ -9,10 +13,10 @@ div, p {
     text-align: center;
     h1 {
       font-size: 2em;
+      line-height: 2em;
     }
     p {
       font-size: 1.4em;
-      line-height: 48px;
       img {
         margin: 0 1em 0 0;
         vertical-align: middle;
@@ -20,7 +24,10 @@ div, p {
     }
   }
 }
-.health {
+.health-panel {
+  .health {
+    background-size: 35%;
+  }
   .health_6 {
     background: url(../images/health_6.png) center no-repeat;
   }
@@ -39,8 +46,15 @@ div, p {
   .health_1 {
     background: url(../images/health_1.png) center no-repeat;
   }
+  .health_0 {
+    background: url(../images/health_0.png) center no-repeat;
+  }
 }
-.charge {
+.charge-panel {
+  .charge {
+    background-size: 35%;
+  }
+
   .charge_3 {
     background: url(../images/charge_3.png) center no-repeat;
   }
@@ -56,6 +70,6 @@ div, p {
 }
 
 .x-fullscreen {
-  background: white;
+  background: url(../images/background.png) center no-repeat;
   background-size: 100%;
 }
