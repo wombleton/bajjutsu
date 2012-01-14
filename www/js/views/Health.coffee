@@ -33,33 +33,30 @@ Bajjutsu.Health = Ext.extend(Ext.Carousel,
       ]
       indicator: false
       listeners:
-        cardswitch: (container, newCard, oldCard, index) ->
-          @health = index
+        cardswitch: ->
+          @resetTask.cancel()
         scope: @
     )
     Bajjutsu.Health.superclass.constructor.call(@, cfg)
     @on('render', ->
       @mon(@el,
         scope: @
-        singletap: (event) ->
-          if event.touches.length is 1
-            @setHealth()
-          else
+        touchstart: (event) ->
+          @resetTask ?= new Ext.util.DelayedTask(->
             @up('screen').reset()
+          , @)
+          @resetTask.delay(1000)
         touchend: ->
-          @flag = false
+          @resetTask.cancel()
       )
     )
-  setHealth: (health = @health - 1) ->
-    unless @flag
-      @flag = true
-      health = 0 if health < 0
-      health = 6 if health > 6
-      @health = health
-      @setActiveItem(health,
-        direction: 'down'
-        type: 'slide'
-      )
+  setHealth: (health) ->
+    health = 0 if health < 0
+    health = 6 if health > 6
+    @setActiveItem(health,
+      direction: 'down'
+      type: 'slide'
+    )
   resetHealth: ->
     @setHealth(6)
 )

@@ -1,10 +1,10 @@
 (function() {
+
   Ext.ns('Bajjutsu');
+
   Bajjutsu.Technique = Ext.extend(Ext.Carousel, {
     constructor: function(cfg) {
-      if (cfg == null) {
-        cfg = {};
-      }
+      if (cfg == null) cfg = {};
       cfg = Ext.applyIf(cfg, {
         cls: 'technique',
         flex: 1,
@@ -25,12 +25,12 @@
       return Bajjutsu.Technique.superclass.constructor.call(this, cfg);
     }
   });
+
   Ext.ns('Bajjutsu');
+
   Bajjutsu.Charge = Ext.extend(Ext.Carousel, {
     constructor: function(cfg) {
-      if (cfg == null) {
-        cfg = {};
-      }
+      if (cfg == null) cfg = {};
       cfg = Ext.applyIf(cfg, {
         activeItem: 0,
         charge: 0,
@@ -48,51 +48,54 @@
           }
         ],
         flex: 1,
-        indicator: false
+        indicator: false,
+        listeners: {
+          cardswitch: function() {
+            return this.resetTask.cancel();
+          },
+          scope: this
+        }
       });
       Bajjutsu.Charge.superclass.constructor.call(this, cfg);
       return this.on('render', function() {
         return this.mon(this.el, {
           scope: this,
-          singletap: function(event) {
-            if (event.touches.length === 1) {
-              return this.resetCharge();
-            } else {
-              return this.up('screen').reset();
+          singletap: function() {
+            return this.setCharge(0);
+          },
+          touchstart: function(event) {
+            if (this.resetTask == null) {
+              this.resetTask = new Ext.util.DelayedTask(function() {
+                return this.up('screen').reset();
+              }, this);
             }
+            return this.resetTask.delay(500);
           },
           touchend: function() {
-            return this.flag = false;
+            return this.resetTask.cancel();
           }
         }, this);
       });
     },
     setCharge: function(charge) {
-      if (!this.flag) {
-        this.flag = true;
-        if (charge < 0) {
-          charge = 0;
-        }
-        if (charge > 3) {
-          charge = 3;
-        }
-        this.charge = charge;
-        return this.setActiveItem(charge, {
-          direction: 'down',
-          type: 'slide'
-        });
-      }
+      if (charge < 0) charge = 0;
+      if (charge > 3) charge = 3;
+      this.charge = charge;
+      return this.setActiveItem(charge, {
+        direction: 'down',
+        type: 'slide'
+      });
     },
     resetCharge: function() {
       return this.setCharge(0);
     }
   });
+
   Ext.ns('Bajjutsu');
+
   Bajjutsu.Health = Ext.extend(Ext.Carousel, {
     constructor: function(cfg) {
-      if (cfg == null) {
-        cfg = {};
-      }
+      if (cfg == null) cfg = {};
       cfg = Ext.applyIf(cfg, {
         activeItem: 6,
         cls: 'health-panel',
@@ -118,8 +121,8 @@
         ],
         indicator: false,
         listeners: {
-          cardswitch: function(container, newCard, oldCard, index) {
-            return this.health = index;
+          cardswitch: function() {
+            return this.resetTask.cancel();
           },
           scope: this
         }
@@ -128,48 +131,38 @@
       return this.on('render', function() {
         return this.mon(this.el, {
           scope: this,
-          singletap: function(event) {
-            if (event.touches.length === 1) {
-              return this.setHealth();
-            } else {
-              return this.up('screen').reset();
+          touchstart: function(event) {
+            if (this.resetTask == null) {
+              this.resetTask = new Ext.util.DelayedTask(function() {
+                return this.up('screen').reset();
+              }, this);
             }
+            return this.resetTask.delay(500);
           },
           touchend: function() {
-            return this.flag = false;
+            return this.resetTask.cancel();
           }
         });
       });
     },
     setHealth: function(health) {
-      if (health == null) {
-        health = this.health - 1;
-      }
-      if (!this.flag) {
-        this.flag = true;
-        if (health < 0) {
-          health = 0;
-        }
-        if (health > 6) {
-          health = 6;
-        }
-        this.health = health;
-        return this.setActiveItem(health, {
-          direction: 'down',
-          type: 'slide'
-        });
-      }
+      if (health < 0) health = 0;
+      if (health > 6) health = 6;
+      return this.setActiveItem(health, {
+        direction: 'down',
+        type: 'slide'
+      });
     },
     resetHealth: function() {
       return this.setHealth(6);
     }
   });
+
   Ext.ns('Bajjutsu');
+
   Bajjutsu.Screen = Ext.extend(Ext.Panel, {
     constructor: function(cfg) {
-      if (cfg == null) {
-        cfg = {};
-      }
+      if (cfg == null) cfg = {};
       this.charge = new Bajjutsu.Charge();
       this.health = new Bajjutsu.Health();
       cfg = Ext.applyIf(cfg, {
@@ -208,7 +201,9 @@
       return this.health.resetHealth();
     }
   });
+
   Ext.reg('screen', Bajjutsu.Screen);
+
   Ext.setup({
     tabletStartupScreen: 'bajjutsu.svg',
     phoneStartupScreen: 'bajjutsu.svg',
@@ -220,4 +215,5 @@
       });
     }
   });
+
 }).call(this);

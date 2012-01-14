@@ -23,30 +23,35 @@ Bajjutsu.Charge = Ext.extend(Ext.Carousel,
       ]
       flex: 1
       indicator: false
+      listeners:
+        cardswitch: ->
+          @resetTask.cancel()
+        scope: @
+
     )
     Bajjutsu.Charge.superclass.constructor.call(@, cfg)
     @on('render', ->
       @mon(@el,
         scope: @
-        singletap: (event) ->
-          if event.touches.length is 1
-            @resetCharge()
-          else
+        singletap: ->
+          @setCharge(0)
+        touchstart: (event) ->
+          @resetTask ?= new Ext.util.DelayedTask(->
             @up('screen').reset()
+          , @)
+          @resetTask.delay(1000)
         touchend: ->
-          @flag = false
+          @resetTask.cancel()
       , @)
     )
   setCharge: (charge) ->
-    unless @flag
-      @flag = true
-      charge = 0 if charge < 0
-      charge = 3 if charge > 3
-      @charge = charge
-      @setActiveItem(charge,
-        direction: 'down'
-        type: 'slide'
-      )
+    charge = 0 if charge < 0
+    charge = 3 if charge > 3
+    @charge = charge
+    @setActiveItem(charge,
+      direction: 'down'
+      type: 'slide'
+    )
   resetCharge: ->
     @setCharge(0)
 )
